@@ -37,7 +37,7 @@ def addSeries(df, chart, sheetname, **kwargs):
         chart.add_series({
             'name':       '=%s!%s' % (sheetname, namecell),
             'categories': [sheetname, 1, 0, len(df.index)+1, 0],
-            'values':     [sheetname, 1, idx+1, len(df.index)+1, idx+1],
+            'values':     [sheetname, 1, idx+1, len(df.index)+1, idx+1]
         })
 
     # Set an Excel chart style.
@@ -45,18 +45,88 @@ def addSeries(df, chart, sheetname, **kwargs):
         chart.set_style(kwargs['style'])
 
 def plotBarChart(df, wb, sheetname, **kwargs):
-    """Plot bar chart of all data in DataFrame df"""
+    """Bar chart of columns in given DataFrame
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        DataFrame with data
+    wb : xlsxwriter.Workbook
+    sheetname: : string
+        Name of sheet to which data and plot should be written
+
+    Additional kwargs:
+    subtype : string
+        Possible values: 'stacked', 'percent_stacked'
+    title : string
+        Chart title
+    style : int
+        Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
+
+    """
     worksheet = writeData(df, wb, sheetname, **kwargs)
-    chart = wb.add_chart({'type': 'column'})
+    params = {'type': 'bar'}
+    if 'subtype' in kwargs:
+        params['subtype'] = kwargs['subtype']
+    chart = wb.add_chart(params)
+    addSeries(df, chart, sheetname, **kwargs)
+    # Insert the chart into the worksheet (with an offset).
+    cell = xl_rowcol_to_cell(2, len(df.columns) + 3) 
+    worksheet.insert_chart(cell, chart, {'x_scale': 2.0, 'y_scale': 2.0})
+
+def plotColumnChart(df, wb, sheetname, **kwargs):
+    """Column chart of columns in given DataFrame
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        DataFrame with data
+    wb : xlsxwriter.Workbook
+    sheetname: : string
+        Name of sheet to which data and plot should be written
+
+    Additional kwargs:
+    subtype : string
+        Possible values: 'stacked', 'percent_stacked'
+    title : string
+        Chart title
+    style : int
+        Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
+
+    """
+    worksheet = writeData(df, wb, sheetname, **kwargs)
+    params = {'type': 'column'}
+    if 'subtype' in kwargs:
+        params['subtype'] = kwargs['subtype']
+    chart = wb.add_chart(params)
     addSeries(df, chart, sheetname, **kwargs)
     # Insert the chart into the worksheet (with an offset).
     cell = xl_rowcol_to_cell(2, len(df.columns) + 3) 
     worksheet.insert_chart(cell, chart, {'x_scale': 2.0, 'y_scale': 2.0})
 
 def plotLineChart(df, wb, sheetname, **kwargs):
-    """Plot line chart of all data in DataFrame df"""
+    """Line chart of columns in given DataFrame
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        DataFrame with data
+    wb : xlsxwriter.Workbook
+    sheetname: : string
+        Name of sheet to which data and plot should be written
+
+    Additional kwargs:
+    title : string
+        Chart title
+    style : int
+        Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
+
+    """
     worksheet = writeData(df, wb, sheetname, **kwargs)
-    chart = wb.add_chart({'type': 'line'})
+    params = {'type': 'line'}
+    if 'subtype' in kwargs:
+        params['subtype'] = kwargs['subtype']
+    chart = wb.add_chart(params)
     addSeries(df, chart, sheetname, **kwargs)
     # Insert the chart into the worksheet (with an offset).
     cell = xl_rowcol_to_cell(2, len(df.columns) + 3) 
@@ -80,15 +150,33 @@ def addScatterSeries(df, pairs, chart, sheetname, **kwargs):
         chart.set_style(kwargs['style'])
 
 def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
-    """pairs must be a dict mapping a name to pairs of column names
-       in DataFrame df.
-       This describes each series that will be plotted
+    """Scatter plot pairs of columns of given DataFrame
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        DataFrame with data
+    pairs : dict
+        Dict mapping names to pairs (tuples) of columns names
+        in df.  This describes each series that will be plotted
+    wb : xlsxwriter.Workbook
+    sheetname: : string
+        Name of sheet to which data and plot should be written
+
+    Additional kwargs:
+    subtype : string
+        Possible values: 'straight_with_markers', 'straight', 'smooth_with_markers', 'smooth'
+    title : string
+        Chart title
+    style : int
+        Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
+
     """
     worksheet = writeData(df, wb, sheetname, **kwargs)
+    params = {'type': 'scatter'}
     if 'subtype' in kwargs:
-        chart = wb.add_chart({'type': 'scatter', 'subtype': kwargs['subtype']})
-    else:
-        chart = wb.add_chart({'type': 'scatter'})
+        params['subtype'] = kwargs['subtype']
+    chart = wb.add_chart(params)
     addScatterSeries(df, pairs, chart, sheetname, **kwargs)
     
     # Insert the chart into the worksheet (with an offset).
