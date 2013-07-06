@@ -11,6 +11,17 @@ def getWorkbook(fname):
     return Workbook(fname)
 
 def writeData(df, wb, sheetname, **kwargs):
+    """Write DataFrame to given sheetname in the given Workbook
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        DataFrame with data
+    wb : xlsxwriter.Workbook
+    sheetname: : string
+        Name of sheet to which data and plot should be written
+
+    """
     worksheet = wb.add_worksheet(sheetname)
     date_format = wb.add_format({'num_format': 'yyyy-mm-dd'}) 
     bold = wb.add_format({'bold': 1})
@@ -55,12 +66,13 @@ def plotBarChart(df, wb, sheetname, **kwargs):
     sheetname: : string
         Name of sheet to which data and plot should be written
 
-    Additional kwargs:
-    subtype : string
+    Other parameters
+    ----------------
+    subtype : string, optional
         Possible values: 'stacked', 'percent_stacked'
-    title : string
+    title : string, optional
         Chart title
-    style : int
+    style : int, optional
         Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
 
     """
@@ -85,12 +97,13 @@ def plotColumnChart(df, wb, sheetname, **kwargs):
     sheetname: : string
         Name of sheet to which data and plot should be written
 
-    Additional kwargs:
-    subtype : string
+    Other parameters
+    ----------------
+    subtype : string, optional
         Possible values: 'stacked', 'percent_stacked'
-    title : string
+    title : string, optional
         Chart title
-    style : int
+    style : int, optional
         Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
 
     """
@@ -115,10 +128,11 @@ def plotLineChart(df, wb, sheetname, **kwargs):
     sheetname: : string
         Name of sheet to which data and plot should be written
 
-    Additional kwargs:
-    title : string
+    Other parameters
+    ----------------
+    title : string, optional
         Chart title
-    style : int
+    style : int, optional
         Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
 
     """
@@ -163,12 +177,13 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
     sheetname: : string
         Name of sheet to which data and plot should be written
 
-    Additional kwargs:
-    subtype : string
+    Other parameters
+    ----------------
+    subtype : string, optional
         Possible values: 'straight_with_markers', 'straight', 'smooth_with_markers', 'smooth'
-    title : string
+    title : string, optional
         Chart title
-    style : int
+    style : int, optional
         Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
 
     """
