@@ -1,6 +1,5 @@
 import datetime
 
-import numpy as np
 import pandas
 
 from xlsxwriter.workbook import Workbook
