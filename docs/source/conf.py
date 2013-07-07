@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# xlsxplot_pandas documentation build configuration file, created by
+# xlsxplt_pandas documentation build configuration file, created by
 # sphinx-quickstart on Fri Jul 05 22:20:16 2013.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -63,7 +63,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'xlsxplot_pandas'
+project = u'xlsxplt_pandas'
 copyright = u'2013, Dieter Vandenbussche'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -190,7 +190,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'xlsxplot_pandasdoc'
+htmlhelp_basename = 'xlsxplt_pandasdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -209,7 +209,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'xlsxplot_pandas.tex', u'xlsxplot\\_pandas Documentation',
+  ('index', 'xlsxplt_pandas.tex', u'xlsxplt\\_pandas Documentation',
    u'Dieter Vandenbussche', 'manual'),
 ]
 
@@ -239,7 +239,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'xlsxplot_pandas', u'xlsxplot_pandas Documentation',
+    ('index', 'xlsxplt_pandas', u'xlsxplt_pandas Documentation',
      [u'Dieter Vandenbussche'], 1)
 ]
 
@@ -253,8 +253,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'xlsxplot_pandas', u'xlsxplot_pandas Documentation',
-   u'Dieter Vandenbussche', 'xlsxplot_pandas', 'One line description of project.',
+  ('index', 'xlsxplt_pandas', u'xlsxplt_pandas Documentation',
+   u'Dieter Vandenbussche', 'xlsxplt_pandas', 'One line description of project.',
    'Miscellaneous'),
 ]
 
