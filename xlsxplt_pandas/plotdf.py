@@ -129,6 +129,8 @@ def plotLineChart(df, wb, sheetname, **kwargs):
 
     Other parameters
     ----------------
+    subtype : string, optional
+        Possible values: 'marker_only', 'straight_with_markers', 'straight', 'smooth_with_markers', 'smooth'
     title : string, optional
         Chart title
     style : int, optional
@@ -141,6 +143,33 @@ def plotLineChart(df, wb, sheetname, **kwargs):
         params['subtype'] = kwargs['subtype']
     chart = wb.add_chart(params)
     addSeries(df, chart, sheetname, **kwargs)
+
+    #Handle subtype here, since it is not actually an Xlsxwriter option for line charts
+    if 'subtype' in kwargs:
+        subtype = kwargs['subtype']
+        if 'marker' in subtype:
+            # Go through each series and define default values.
+            for series in chart.series:
+                # Set a marker type unless there is a user defined type.
+                series['marker'] = {'type': 'automatic',
+                                    'automatic': True,
+                                    'defined': True,
+                                    'line': {'defined': False},
+                                    'fill': {'defined': False}
+                                    }
+
+        # Turn on smoothing if required
+        if 'smooth' in subtype:
+            for series in chart.series:
+                series['smooth'] = True
+
+        if subtype == 'marker_only':
+            for series in chart.series:
+                series['line'] = {'width': 2.25,
+                                  'none': 1,
+                                  'defined': True,
+                                  }
+
     # Insert the chart into the worksheet (with an offset).
     cell = xl_rowcol_to_cell(2, len(df.columns) + 3) 
     worksheet.insert_chart(cell, chart, {'x_scale': 2.0, 'y_scale': 2.0})
@@ -179,7 +208,7 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
     Other parameters
     ----------------
     subtype : string, optional
-        Possible values: 'straight_with_markers', 'straight', 'smooth_with_markers', 'smooth'
+        Possible values: 'marker_only', 'straight_with_markers', 'straight', 'smooth_with_markers', 'smooth'
     title : string, optional
         Chart title
     style : int, optional
