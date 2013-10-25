@@ -5,6 +5,13 @@ import pandas
 from xlsxwriter.workbook import Workbook
 from xlsxwriter.utility import xl_cell_to_rowcol, xl_rowcol_to_cell
 
+def __getLocation(df, kwargs):
+    if 'loc' in kwargs:
+        cell = xl_rowcol_to_cell(*(kwargs['loc']))
+    else:
+        cell = xl_rowcol_to_cell(2, len(df.columns) + 3) 
+    return cell
+
 def getWorkbook(fname):
     """Return a xlsxwriter Workbook by the given name"""
     return Workbook(fname)
@@ -73,6 +80,8 @@ def plotBarChart(df, wb, sheetname, **kwargs):
         Chart title
     style : int, optional
         Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
+    loc : (int, int) tuple, optional
+        Row and column number where to locate the plot, if not specified the plot is placed to the right of the data
 
     """
     worksheet = writeData(df, wb, sheetname, **kwargs)
@@ -82,7 +91,7 @@ def plotBarChart(df, wb, sheetname, **kwargs):
     chart = wb.add_chart(params)
     addSeries(df, chart, sheetname, **kwargs)
     # Insert the chart into the worksheet (with an offset).
-    cell = xl_rowcol_to_cell(2, len(df.columns) + 3) 
+    cell = __getLocation(df, kwargs)
     worksheet.insert_chart(cell, chart, {'x_scale': 2.0, 'y_scale': 2.0})
 
 def plotColumnChart(df, wb, sheetname, **kwargs):
@@ -104,6 +113,8 @@ def plotColumnChart(df, wb, sheetname, **kwargs):
         Chart title
     style : int, optional
         Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
+    loc : (int, int) tuple, optional
+        Row and column number where to locate the plot, if not specified the plot is placed to the right of the data
 
     """
     worksheet = writeData(df, wb, sheetname, **kwargs)
@@ -113,7 +124,7 @@ def plotColumnChart(df, wb, sheetname, **kwargs):
     chart = wb.add_chart(params)
     addSeries(df, chart, sheetname, **kwargs)
     # Insert the chart into the worksheet (with an offset).
-    cell = xl_rowcol_to_cell(2, len(df.columns) + 3) 
+    cell = __getLocation(df, kwargs)
     worksheet.insert_chart(cell, chart, {'x_scale': 2.0, 'y_scale': 2.0})
 
 def plotLineChart(df, wb, sheetname, **kwargs):
@@ -135,6 +146,8 @@ def plotLineChart(df, wb, sheetname, **kwargs):
         Chart title
     style : int, optional
         Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
+    loc : (int, int) tuple, optional
+        Row and column number where to locate the plot, if not specified the plot is placed to the right of the data
 
     """
     worksheet = writeData(df, wb, sheetname, **kwargs)
@@ -171,7 +184,7 @@ def plotLineChart(df, wb, sheetname, **kwargs):
                                   }
 
     # Insert the chart into the worksheet (with an offset).
-    cell = xl_rowcol_to_cell(2, len(df.columns) + 3) 
+    cell = __getLocation(df, kwargs)
     worksheet.insert_chart(cell, chart, {'x_scale': 2.0, 'y_scale': 2.0})
 
 def addScatterSeries(df, pairs, chart, sheetname, **kwargs):
@@ -213,6 +226,8 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
         Chart title
     style : int, optional
         Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
+    loc : (int, int) tuple, optional
+        Row and column number where to locate the plot, if not specified the plot is placed to the right of the data
 
     """
     worksheet = writeData(df, wb, sheetname, **kwargs)
@@ -223,7 +238,7 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
     addScatterSeries(df, pairs, chart, sheetname, **kwargs)
     
     # Insert the chart into the worksheet (with an offset).
-    cell = xl_rowcol_to_cell(2, len(df.columns) + 3) 
+    cell = __getLocation(df, kwargs)
     worksheet.insert_chart(cell, chart, {'x_scale': 2.0, 'y_scale': 2.0})
 
 if __name__ == "__main__":
