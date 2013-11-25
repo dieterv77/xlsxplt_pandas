@@ -1,1 +1,1 @@
-from plotdf import getWorkbook, writeData, addSeries, plotBarChart, plotLineChart, addScatterSeries, plotScatterChart
+from plotdf import getWorkbook, writeData, addSeries, plotBarChart, plotColumnChart, plotLineChart, addScatterSeries, plotScatterChart
