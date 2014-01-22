@@ -52,7 +52,8 @@ def addSeries(df, chart, sheetname, **kwargs):
     for idx, col in enumerate(df.columns):
         namecell = xl_rowcol_to_cell(0,idx+1)
         chart.add_series({
-            'name':       '=%s!%s' % (sheetname, namecell),
+            # 'name':       '=%s!%s' % (sheetname, namecell),
+            'name':       [sheetname, 0, idx+1],
             'categories': [sheetname, 1, 0, len(df.index)+1, 0],
             'values':     [sheetname, 1, idx+1, len(df.index)+1, idx+1]
         })
