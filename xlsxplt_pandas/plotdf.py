@@ -12,6 +12,11 @@ def __getLocation(df, kwargs):
         cell = xl_rowcol_to_cell(2, len(df.columns) + 3) 
     return cell
 
+def __addQuotes(name):
+    if not name.isalnum():
+        return "'" + name + "'"
+    return name
+
 def getWorkbook(fname):
     """Return a xlsxwriter Workbook by the given name"""
     return Workbook(fname)
@@ -53,9 +58,9 @@ def addSeries(df, chart, sheetname, **kwargs):
         namecell = xl_rowcol_to_cell(0,idx+1)
         chart.add_series({
             # 'name':       '=%s!%s' % (sheetname, namecell),
-            'name':       [sheetname, 0, idx+1],
-            'categories': [sheetname, 1, 0, len(df.index)+1, 0],
-            'values':     [sheetname, 1, idx+1, len(df.index)+1, idx+1]
+            'name':       [__addQuotes(sheetname), 0, idx+1],
+            'categories': [__addQuotes(sheetname), 1, 0, len(df.index), 0],
+            'values':     [__addQuotes(sheetname), 1, idx+1, len(df.index), idx+1]
         })
 
     # Set an Excel chart style.
