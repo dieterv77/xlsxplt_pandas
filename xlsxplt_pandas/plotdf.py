@@ -1,9 +1,24 @@
 import datetime
+from collections import defaultdict
 
 import pandas
 
 from xlsxwriter.workbook import Workbook
 from xlsxwriter.utility import xl_cell_to_rowcol, xl_rowcol_to_cell
+
+def __sortDF(df, pairs):
+    """For each pair, return a df that ensures that the x-values are in ascending order
+       Note this will clobber the index.  Assumes y columns are not repeated
+    """
+    x2y = defaultdict(set)
+    for x, y in pairs.itervalues():
+        x2y[x].add(y)
+    final = []
+    for x, ys in x2y.iteritems():
+        subdf = df[[x] + sorted(ys)].sort(x)
+        subdf.index = range(len(subdf.index))
+        final.append(subdf)
+    return pandas.concat(final,axis=1)
 
 def __getLocation(df, kwargs):
     if 'loc' in kwargs:
@@ -234,8 +249,13 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
         Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
     loc : (int, int) tuple, optional
         Row and column number where to locate the plot, if not specified the plot is placed to the right of the data
+    sortonx : boolean, optional (default: False)
+        Sort the pairs on the x values for nicer lines.  This will only include data to be plotted in the sheet.
+
 
     """
+    if 'sortonx' in kwargs and kwargs['sortonx']:
+        df = __sortDF(df, pairs)
     worksheet = writeData(df, wb, sheetname, **kwargs)
     params = {'type': 'scatter'}
     if 'subtype' in kwargs:
