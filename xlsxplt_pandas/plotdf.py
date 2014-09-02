@@ -8,14 +8,15 @@ from xlsxwriter.workbook import Workbook
 from xlsxwriter.utility import xl_cell_to_rowcol, xl_rowcol_to_cell
 
 def __addReference(df, pairs, reffn):
-    minval = min(df[y].min() for x,y in pairs.itervalues())
-    maxval = max(df[y].max() for x,y in pairs.itervalues())
+    minval = min(df[x].min() for x,y in pairs.itervalues())
+    maxval = max(df[x].max() for x,y in pairs.itervalues())
     minval = minval - 0.1 * abs(minval)
     maxval = maxval + 0.1 * abs(maxval)
     x = pandas.Series(np.linspace(minval, maxval, len(df.index)), index=df.index)
     y = x.apply(reffn)
     if 'refx' in df.columns or 'refy' in df.columns or 'Reference' in pairs:
         raise Exception('Unable to add reference columns, name conflict')
+    df = df.copy()
     df['refx'] = x
     df['refy'] = y
     pairs['Reference'] = ('refx','refy')
