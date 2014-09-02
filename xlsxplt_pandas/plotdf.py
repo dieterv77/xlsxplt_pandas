@@ -1,10 +1,26 @@
 import datetime
 from collections import defaultdict
 
+import numpy as np
 import pandas
 
 from xlsxwriter.workbook import Workbook
 from xlsxwriter.utility import xl_cell_to_rowcol, xl_rowcol_to_cell
+
+def __addReference(df, pairs, reffn):
+    minval = min(df[y].min() for x,y in pairs.itervalues())
+    maxval = max(df[y].max() for x,y in pairs.itervalues())
+    minval = minval - 0.1 * abs(minval)
+    maxval = maxval + 0.1 * abs(maxval)
+    x = pandas.Series(np.linspace(minval, maxval, len(df.index)), index=df.index)
+    y = x.apply(reffn)
+    if 'refx' in df.columns or 'refy' in df.columns or 'Reference' in pairs:
+        raise Exception('Unable to add reference columns, name conflict')
+    df['refx'] = x
+    df['refy'] = y
+    pairs['Reference'] = ('refx','refy')
+    return df, pairs
+
 
 def __sortDF(df, pairs):
     """For each pair, return a df that ensures that the x-values are in ascending order
@@ -215,11 +231,16 @@ def addScatterSeries(df, pairs, chart, sheetname, **kwargs):
     for name, (col1, col2) in pairs.iteritems():
         idx1 = name2idx[col1]
         idx2 = name2idx[col2]
-        chart.add_series({
+        params = {
             'name':       name,
             'categories': [sheetname, 1, idx1+1, len(df.index)+1, idx1+1],
             'values':     [sheetname, 1, idx2+1, len(df.index)+1, idx2+1],
-        })
+        }
+        if name == 'Reference':
+            params['marker'] = {'type': 'none'}
+            params['smooth'] = True
+            params['line'] = {'dash_type': 'solid'}
+        chart.add_series(params)
 
     # Set an Excel chart style.
     if 'style' in kwargs:
@@ -251,11 +272,16 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
         Row and column number where to locate the plot, if not specified the plot is placed to the right of the data
     sortonx : boolean, optional (default: False)
         Sort the pairs on the x values for nicer lines.  This will only include data to be plotted in the sheet.
-
+    reference : callable, option (default: None)
+        Pass a function to insert a reference series based on provided callable which should take a float argument
+        and return a float
 
     """
     if 'sortonx' in kwargs and kwargs['sortonx']:
         df = __sortDF(df, pairs)
+    if 'reference' in kwargs and kwargs['reference'] is not None:
+        df, pairs = __addReference(df, pairs, kwargs['reference'])
+
     worksheet = writeData(df, wb, sheetname, **kwargs)
     params = {'type': 'scatter'}
     if 'subtype' in kwargs:
