@@ -21,7 +21,6 @@ def __addReference(df, pairs, reffn):
     pairs['Reference'] = ('refx','refy')
     return df, pairs
 
-
 def __sortDF(df, pairs):
     """For each pair, return a df that ensures that the x-values are in ascending order
        Note this will clobber the index.  Assumes y columns are not repeated
@@ -35,6 +34,12 @@ def __sortDF(df, pairs):
         subdf.index = range(len(subdf.index))
         final.append(subdf)
     return pandas.concat(final,axis=1)
+
+def __addAxisInfo(chart, kwargs):
+    if 'x_title' in kwargs:
+        chart.set_x_axis({'name': kwargs['x_title']})
+    if 'y_title' in kwargs:
+        chart.set_y_axis({'name': kwargs['y_title']})
 
 def __getLocation(df, kwargs):
     if 'loc' in kwargs:
@@ -126,6 +131,7 @@ def plotBarChart(df, wb, sheetname, **kwargs):
     if 'subtype' in kwargs:
         params['subtype'] = kwargs['subtype']
     chart = wb.add_chart(params)
+    __addAxisInfo(chart, kwargs)
     addSeries(df, chart, sheetname, **kwargs)
     # Insert the chart into the worksheet (with an offset).
     cell = __getLocation(df, kwargs)
@@ -159,6 +165,7 @@ def plotColumnChart(df, wb, sheetname, **kwargs):
     if 'subtype' in kwargs:
         params['subtype'] = kwargs['subtype']
     chart = wb.add_chart(params)
+    __addAxisInfo(chart, kwargs)
     addSeries(df, chart, sheetname, **kwargs)
     # Insert the chart into the worksheet (with an offset).
     cell = __getLocation(df, kwargs)
@@ -192,6 +199,7 @@ def plotLineChart(df, wb, sheetname, **kwargs):
     if 'subtype' in kwargs:
         params['subtype'] = kwargs['subtype']
     chart = wb.add_chart(params)
+    __addAxisInfo(chart, kwargs)
     addSeries(df, chart, sheetname, **kwargs)
 
     #Handle subtype here, since it is not actually an Xlsxwriter option for line charts
@@ -287,6 +295,7 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
     if 'subtype' in kwargs:
         params['subtype'] = kwargs['subtype']
     chart = wb.add_chart(params)
+    __addAxisInfo(chart, kwargs)
     addScatterSeries(df, pairs, chart, sheetname, **kwargs)
     
     # Insert the chart into the worksheet (with an offset).
