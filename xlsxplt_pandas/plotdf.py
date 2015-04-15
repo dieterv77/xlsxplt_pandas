@@ -39,8 +39,14 @@ def __sortDF(df, pairs):
 def __addAxisInfo(chart, kwargs):
     if 'x_title' in kwargs:
         chart.set_x_axis({'name': kwargs['x_title']})
+    if 'x_lim' in kwargs:
+        lim = kwargs['x_lim']
+        chart.set_x_axis({'min': lim[0], 'max': lim[1]})
     if 'y_title' in kwargs:
         chart.set_y_axis({'name': kwargs['y_title']})
+    if 'y_lim' in kwargs:
+        lim = kwargs['y_lim']
+        chart.set_y_axis({'min': lim[0], 'max': lim[1]})
 
 def __getLocation(df, kwargs):
     if 'loc' in kwargs:
