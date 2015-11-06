@@ -97,14 +97,20 @@ def writeData(df, wb, sheetname, **kwargs):
 def addSeries(df, chart, sheetname, **kwargs):
     if 'title' in kwargs:
         chart.set_title({'name': kwargs['title']})
+    secondaries = set()
+    if 'secondary_y' in kwargs:
+        secondaries = set(kwargs['secondary_y'])
     for idx, col in enumerate(df.columns):
         namecell = xl_rowcol_to_cell(0,idx+1)
-        chart.add_series({
+        info = {
             # 'name':       '=%s!%s' % (sheetname, namecell),
             'name':       [__addQuotes(sheetname), 0, idx+1],
             'categories': [__addQuotes(sheetname), 1, 0, len(df.index), 0],
             'values':     [__addQuotes(sheetname), 1, idx+1, len(df.index), idx+1]
-        })
+        }
+        if col in secondaries:
+            info['y2_axis'] = 1
+        chart.add_series(info)
 
     # Set an Excel chart style.
     if 'style' in kwargs:
@@ -199,6 +205,8 @@ def plotLineChart(df, wb, sheetname, **kwargs):
         Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
     loc : (int, int) tuple, optional
         Row and column number where to locate the plot, if not specified the plot is placed to the right of the data
+    secondary_y : iterable, optional
+        list of columns whose scale goes on the secondary y-axis
 
     """
     worksheet = writeData(df, wb, sheetname, **kwargs)
