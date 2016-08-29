@@ -60,8 +60,10 @@ def __addQuotes(name):
         return "'" + name + "'"
     return name
 
-def getWorkbook(fname):
+def getWorkbook(fname, options=None):
     """Return a xlsxwriter Workbook by the given name"""
+    if options is not None:
+        return Workbook(fname, options)
     return Workbook(fname)
 
 def writeData(df, wb, sheetname, **kwargs):
