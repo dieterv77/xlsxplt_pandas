@@ -112,6 +112,8 @@ def addSeries(df, chart, sheetname, **kwargs):
         }
         if col in secondaries:
             info['y2_axis'] = 1
+        if 'gap' in kwargs:
+            info['gap'] = kwargs['gap']
         chart.add_series(info)
 
     # Set an Excel chart style.
@@ -315,6 +317,53 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
     __addAxisInfo(chart, kwargs)
     addScatterSeries(df, pairs, chart, sheetname, **kwargs)
     
+    # Insert the chart into the worksheet (with an offset).
+    cell = __getLocation(df, kwargs)
+    worksheet.insert_chart(cell, chart, {'x_scale': 2.0, 'y_scale': 2.0})
+
+def plotHistogram(df, wb, sheetname, **kwargs):
+    """Histogram chart of columns in given DataFrame
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        DataFrame with data
+    wb : xlsxwriter.Workbook
+    sheetname: : string
+        Name of sheet to which data and plot should be written
+
+    Other parameters
+    ----------------
+    bins : None, optional
+    title : string, optional
+        Chart title
+    style : int, optional
+        Used to set the style of the chart to one of the 48 built-in styles available on the Design tab in Excel
+    loc : (int, int) tuple, optional
+        Row and column number where to locate the plot, if not specified the plot is placed to the right of the data
+
+    """
+    alldata = df.values.flatten()
+    alldata = alldata[~np.isnan(alldata)]
+    if 'bins' in kwargs:
+        h, b = np.histogram(alldata, bins=kwargs['bin'])
+    else:
+        h, b = np.histogram(alldata)
+    bins = b
+    bindf = {}
+    for colname, data in df.iteritems():
+        data = data.dropna().values
+        h, b = np.histogram(data, bins=bins)
+        bindf[colname] = pandas.Series(h, index=[x for x in b[:-1]])
+    df = pandas.DataFrame(bindf)
+    worksheet = writeData(df, wb, sheetname, **kwargs)
+    params = {'type': 'column'}
+    if 'subtype' in kwargs:
+        params['subtype'] = kwargs['subtype']
+    chart = wb.add_chart(params)
+    __addAxisInfo(chart, kwargs)
+    kwargs['gap'] = 0
+    addSeries(df, chart, sheetname, **kwargs)
     # Insert the chart into the worksheet (with an offset).
     cell = __getLocation(df, kwargs)
     worksheet.insert_chart(cell, chart, {'x_scale': 2.0, 'y_scale': 2.0})
