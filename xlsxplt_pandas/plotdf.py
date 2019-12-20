@@ -8,8 +8,8 @@ from xlsxwriter.workbook import Workbook
 from xlsxwriter.utility import xl_cell_to_rowcol, xl_rowcol_to_cell
 
 def __addReference(df, pairs, reffn):
-    minval = min(df[x].min() for x,y in pairs.itervalues())
-    maxval = max(df[x].max() for x,y in pairs.itervalues())
+    minval = min(df[x].min() for x,y in pairs.values())
+    maxval = max(df[x].max() for x,y in pairs.values())
     minval = minval - 0.1 * abs(minval)
     maxval = maxval + 0.1 * abs(maxval)
     x = pandas.Series(np.linspace(minval, maxval, len(df.index)), index=df.index)
@@ -27,12 +27,12 @@ def __sortDF(df, pairs):
        Note this will clobber the index.  Assumes y columns are not repeated
     """
     x2y = defaultdict(set)
-    for x, y in pairs.itervalues():
+    for x, y in pairs.values():
         x2y[x].add(y)
     final = []
-    for x, ys in x2y.iteritems():
+    for x, ys in x2y.items():
         subdf = df[[x] + sorted(ys)].sort(x)
-        subdf.index = range(len(subdf.index))
+        subdf.index = list(range(len(subdf.index)))
         final.append(subdf)
     return pandas.concat(final,axis=1)
 
@@ -255,7 +255,7 @@ def addScatterSeries(df, pairs, chart, sheetname, **kwargs):
     if 'title' in kwargs:
         chart.set_title({'name': kwargs['title']})
     name2idx = dict((c,idx) for idx, c in enumerate(df.columns))
-    for name, (col1, col2) in pairs.iteritems():
+    for name, (col1, col2) in pairs.items():
         idx1 = name2idx[col1]
         idx2 = name2idx[col2]
         params = {
@@ -351,7 +351,7 @@ def plotHistogram(df, wb, sheetname, **kwargs):
         h, b = np.histogram(alldata)
     bins = b
     bindf = {}
-    for colname, data in df.iteritems():
+    for colname, data in df.items():
         data = data.dropna().values
         h, b = np.histogram(data, bins=bins)
         bindf[colname] = pandas.Series(h, index=[x for x in b[:-1]])
