@@ -278,11 +278,11 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
 
     Parameters
     ----------
-    df : pandas.DataFrame
-        DataFrame with data
-    pairs : dict
-        Dict mapping names to pairs (tuples) of columns names
-        in df.  This describes each series that will be plotted
+    Two ways to use this depending on first two arguments:
+      1.  df: DataFrame
+          pairs: Dict mapping name to tuples of size two, indicating the pair of columns to be scattered,
+          if pairs is None, then it assumes there's only one pair in the DataFrame and will scatter them
+      2.  df and pairs are pandas Series, to be scatter against each other
     wb : xlsxwriter.Workbook
     sheetname: : string
         Name of sheet to which data and plot should be written
@@ -304,6 +304,30 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
         and return a float
 
     """
+    if isinstance(df, pandas.Series) and isinstance(pairs, pandas.Series):
+        df = df.to_frame()
+        df2 = pairs.to_frame()
+        if df2.columns[0] == 0:
+            df2.columns = [1] 
+        df = pandas.concat([df, df2], axis=1)
+        origlen = len(df.index)
+        df = df.dropna()
+        newlen = len(df.index)
+        if newlen != origlen:
+            print('Dropped', origlen - newlen, 'rows due to missing values')
+        df.columns = [str(x) for x in df.columns]
+        pairs = {'data': (df.columns[0], df.columns[1])} 
+    elif isinstance(df, pandas.DataFrame):
+        if pairs is None:
+            if len(df.columns) != 2:
+                raise Exception('Pairs cannot be None if DataFrame has more than 2 columns')
+            pairs = {'data': (df.columns[0], df.columns[1])}
+    if len(pairs) == 1:
+        pair = list(pairs.values())[0]
+        if 'x_title' not in kwargs:
+            kwargs['x_title'] = pair[0]
+        if 'y_title' not in kwargs:
+            kwargs['y_title'] = pair[1]
     if 'sortonx' in kwargs and kwargs['sortonx']:
         df = __sortDF(df, pairs)
     if 'reference' in kwargs and kwargs['reference'] is not None:
