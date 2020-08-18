@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='xlsxplt_pandas',
-    version='0.1.9',
+    version='0.2.0',
     author='Dieter Vandenbussche',
     author_email='',
     packages=['xlsxplt_pandas'],

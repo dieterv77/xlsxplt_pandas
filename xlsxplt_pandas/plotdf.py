@@ -255,7 +255,11 @@ def addScatterSeries(df, pairs, chart, sheetname, **kwargs):
     if 'title' in kwargs:
         chart.set_title({'name': kwargs['title']})
     name2idx = dict((c,idx) for idx, c in enumerate(df.columns))
-    for name, (col1, col2) in pairs.items():
+    cols = sorted(x for x in pairs.keys() if x != 'Reference')
+    if 'Reference' in pairs:
+        cols = cols + ['Reference']
+    for name in cols:
+        (col1, col2) = pairs[name]
         idx1 = name2idx[col1]
         idx2 = name2idx[col2]
         params = {
@@ -330,6 +334,7 @@ def plotScatterChart(df, pairs, wb, sheetname, **kwargs):
             kwargs['y_title'] = pair[1]
     if 'sortonx' in kwargs and kwargs['sortonx']:
         df = __sortDF(df, pairs)
+    pairs = pairs.copy()
     if 'reference' in kwargs and kwargs['reference'] is not None:
         df, pairs = __addReference(df, pairs, kwargs['reference'])
 
